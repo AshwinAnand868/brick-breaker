@@ -1,0 +1,1 @@
+This is a simple Brick Breaker game that I am learning to build with my favourite language - Java.
