@@ -22,7 +22,7 @@ public class MapGenerator {
         }
 
         brickHeight = 150/row;
-        brickWidth = 540/col;
+        brickWidth = 700/col;
     }
 
     public void draw(Graphics2D g2D) {
@@ -31,12 +31,12 @@ public class MapGenerator {
                 if(bricks2DArray[i][j] > 0) {
                     // drawing brick
                     g2D.setColor(Color.WHITE);
-                    g2D.fillRect(j * brickWidth + 80, i * brickHeight + 50, brickWidth, brickHeight);
+                    g2D.fillRect(j * brickWidth + 80, i * brickHeight + 70, brickWidth, brickHeight);
 
                     // setting border of that brick
                     g2D.setStroke(new BasicStroke(5));
                     g2D.setColor(Color.BLACK);
-                    g2D.drawRect(j * brickWidth + 80, i * brickHeight + 50, brickWidth, brickHeight);
+                    g2D.drawRect(j * brickWidth + 80, i * brickHeight + 70, brickWidth, brickHeight);
                 }
             }
         } 

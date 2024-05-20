@@ -29,7 +29,7 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
     private int ballXDir = -1;
     private int ballYDir = -2;
 
-    private int panelWidth = 692;
+    private int panelWidth = 880;
     private int panelHeight = 592;
 
     private MapGenerator mapGenerator;
@@ -38,7 +38,7 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
         addKeyListener(this);
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
-        mapGenerator = new MapGenerator(3, 7);
+        mapGenerator = new MapGenerator(3, 9);
         timer = new Timer(delay, this);
         timer.start();
     }
@@ -53,9 +53,14 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
         // left border
         g.fillRect(0, 0, 5, 592);
         // top border
-        g.fillRect(0, 0, 692, 8);
+        g.fillRect(0, 0, 880, 8);
         // right border
-        g.fillRect(680, 0, 30, 592);
+        g.fillRect(880, 0, 30, 592);
+
+        // creating the scores
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("serif", Font.BOLD, 25));
+        g.drawString("" + score, 820, 50);
 
         // the rod/paddle
         g.setColor(Color.GREEN);
@@ -66,6 +71,32 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
         g.fillOval(ballposX, ballposY, 20, 20);
 
         mapGenerator.draw((Graphics2D) g);
+
+        if(totalBricks <= 0) {
+            play = false;
+            ballXDir = 0;
+            ballYDir = 0;
+
+            g.setColor(Color.RED);
+            g.setFont(new Font("serif", Font.BOLD, 25));
+            g.drawString("You Won!", 370, 300);
+
+            g.setColor(Color.RED);
+            g.drawString("Press Enter to restart.", 340, 350);
+        }
+
+        if(ballposY > 560) {
+            play = false;
+            ballXDir = 0;
+            ballYDir = 0;
+
+            g.setColor(Color.RED);
+            g.setFont(new Font("serif", Font.BOLD, 25));
+            g.drawString("Game Over, Scores: " + score, 340, 300);
+
+            g.setColor(Color.RED);
+            g.drawString("Press Enter to restart.", 340, 350);
+        }
 
         g.dispose();
     }
@@ -80,10 +111,10 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
             }
 
             A: for(int i = 0; i < mapGenerator.bricks2DArray.length; ++i) {
-                for(int j = 0; j < mapGenerator.bricks2DArray[0].length; ++j) {
+                for(int j = 0; j < mapGenerator.bricks2DArray[ 0].length; ++j) {
                     if(mapGenerator.bricks2DArray[i][j] > 0) {
                         int brickX = mapGenerator.brickWidth * j + 80;
-                        int brickY = mapGenerator.brickHeight * i + 50;
+                        int brickY = mapGenerator.brickHeight * i + 70;
 
                         Rectangle brickRect = new Rectangle(brickX, brickY, mapGenerator.brickWidth, mapGenerator.brickHeight);
                         Rectangle ballRect = new Rectangle(ballposX, ballposY, 20, 20);
@@ -92,6 +123,13 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
                             mapGenerator.setBrickValue(0, i, j);
                             totalBricks--;
                             score+=5;
+
+                            if(ballposX +19 <=brickRect.x || ballposX +1 >=brickRect.x +brickRect.width){
+                                ballXDir=-ballXDir;
+                            }
+                            else{
+                                ballYDir=-ballYDir;
+                            }
 
                             break A;
                         }
@@ -134,6 +172,10 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
             } else {
                 moveLeft();
             }
+        } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            if(!play) {
+                setDefaults();
+            }
         }
     }
 
@@ -155,5 +197,19 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
     @Override
     public void keyReleased(KeyEvent e) {
 
+    }
+
+    private void setDefaults() {
+        play = true;
+        ballposX = 150;
+        ballposY = 400;
+        ballXDir = -1;
+        ballYDir = -2;
+        playerX = 310;
+        score = 0;
+        totalBricks = 21;
+        mapGenerator = new MapGenerator(3, 9);
+
+        repaint();
     }
 }
