@@ -32,10 +32,13 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
     private int panelWidth = 692;
     private int panelHeight = 592;
 
+    private MapGenerator mapGenerator;
+
     public GamePlay() {
         addKeyListener(this);
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
+        mapGenerator = new MapGenerator(3, 7);
         timer = new Timer(delay, this);
         timer.start();
     }
@@ -62,6 +65,8 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
         g.setColor(Color.YELLOW);
         g.fillOval(ballposX, ballposY, 20, 20);
 
+        mapGenerator.draw((Graphics2D) g);
+
         g.dispose();
     }
 
@@ -70,6 +75,30 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
         timer.start();
 
         if(play) {
+            if(new Rectangle(ballposX, ballposY, 20, 20).intersects(new Rectangle(playerX, playerY, 100, 8))) {
+                ballYDir = -ballYDir;
+            }
+
+            A: for(int i = 0; i < mapGenerator.bricks2DArray.length; ++i) {
+                for(int j = 0; j < mapGenerator.bricks2DArray[0].length; ++j) {
+                    if(mapGenerator.bricks2DArray[i][j] > 0) {
+                        int brickX = mapGenerator.brickWidth * j + 80;
+                        int brickY = mapGenerator.brickHeight * i + 50;
+
+                        Rectangle brickRect = new Rectangle(brickX, brickY, mapGenerator.brickWidth, mapGenerator.brickHeight);
+                        Rectangle ballRect = new Rectangle(ballposX, ballposY, 20, 20);
+
+                        if(ballRect.intersects(brickRect)) {
+                            mapGenerator.setBrickValue(0, i, j);
+                            totalBricks--;
+                            score+=5;
+
+                            break A;
+                        }
+
+                    }
+                }
+            }
             ballposX += ballXDir;
             ballposY += ballYDir;
 
@@ -83,7 +112,7 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
             }
             // going towards positive values in both y and x axis
             if(ballposX > 670) {
-                ballXDir -= ballXDir;
+                ballXDir = -ballXDir;
             }
 
         }
